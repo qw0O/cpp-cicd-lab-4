@@ -11,14 +11,10 @@ jobs:
   rollback:
     runs-on: ubuntu-latest
     steps:
-      - name: Convert repository name to lowercase
-        run: |
-          echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
       - name: Rollback to previous version
         run: |
           docker stop app-blue 2>/dev/null || true
-          docker run -d --name app-blue -p 8080:8080 ghcr.io/${{ env.REPO_LOWER }}:${{ github.event.inputs.version }}
+          docker run -d --name app-blue -p 8080:8080 ghcr.io/qw0O/ccp-cicd-lab-4:${{ github.event.inputs.version }}
           sleep 5
           curl --retry 5 --retry-delay 2 --fail http://localhost:8080/health || exit 1
           echo "Rollback to ${{ github.event.inputs.version }} completed" >> rollback.log
